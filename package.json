@@ -1,0 +1,32 @@
+{
+  "name": "intl-wikipedia",
+  "version": "1.0.0",
+  "description": "Search from wikipedia for any language",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "author": {
+    "name": "wzbg",
+    "email": "z3530515@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wzbg/intl-wikipedia"
+  },
+  "keywords": [
+    "wikipedia",
+    "wiki",
+    "pedia",
+    "international",
+    "intl",
+    "language",
+    "lang",
+    "easy"
+  ],
+  "dependencies": {
+    "easypedia": "^4.0.1",
+    "fetch": "^1.0.1"
+  }
+}
