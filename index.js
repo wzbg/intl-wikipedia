@@ -2,40 +2,36 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-19 11:14:21
+* @Last Modified time: 2016-02-25 15:10:57
 */
 'use strict'
 
 const fetchUrl = require('fetch').fetchUrl
-const easypedia = require('easypedia')
+const wikipedia = require('wtf_wikipedia')
 
-module.exports = (searchTerm, language) => {
-  searchTerm = encodeURI(searchTerm)
-  return new Promise((resolve, reject) => {
-    easypedia(searchTerm, { language }, (error, page) => {
-      if (error) return reject(error)
-      page.name = decodeURI(page.name)
-      const text = page._text || {}
-      if (Object.keys(text).length) return resolve(page)
-      const url = `https://${page.language}.wikipedia.org/w/api.php?action=query&list=search&utf8&format=json&srsearch=${searchTerm}`
-      fetchUrl(url, (err, res, buf) => {
-        if (err || res.status != 200) return resolve(page)
-        const results = JSON.parse(buf).query.search
-        if (!results.length) return resolve(page)
-        easypedias(results.map(result => result.title), language).then(page => resolve(page)).catch(err => resolve(page))
-      })
+module.exports = (searchTerm, language) => (
+  new Promise((resolve, reject) => {
+    const url = `https://${language}.wikipedia.org/w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURI(searchTerm)}`
+    fetchUrl(url, (err, res, buf) => {
+      if (err) return reject(err)
+      if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
+      const results = JSON.parse(buf).query.search
+      if (!results.length) return resolve()
+      getPage(results.map(result => result.title), language).then(page => resolve(page)).catch(err => reject(err))
     })
   })
-}
+)
 
-const easypedias = (searchTerms, language, index) => {
-  index = index || 0
-  return new Promise((resolve, reject) => {
-    if (searchTerms.length === index) return reject(new Error(`error index: ${index}`))
-    easypedia(encodeURI(searchTerms[index]), { language }, (error, page) => {
-      if (error) return easypedias(searchTerms, language, ++index)
-      page.name = decodeURI(page.name)
+const getPage = (searchTerms, language, index) => (
+  new Promise((resolve, reject) => {
+    index = index || 0
+    if (searchTerms.length === index) return reject(new Error('no result'))
+    wikipedia.from_api(encodeURI(searchTerms[index]), language, markup => {
+      if (!markup) return getPage(searchTerms, language, ++index)
+      const page = wikipedia.parse(markup)
+      page.name = searchTerms[index]
+      page.language = language
       resolve(page)
     })
   })
-}
+)
