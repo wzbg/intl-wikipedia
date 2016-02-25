@@ -2,19 +2,45 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-25 15:37:06
+* @Last Modified time: 2016-02-25 17:43:30
 */
 'use strict'
 
 const fetchUrl = require('fetch').fetchUrl
 const wikipedia = require('wtf_wikipedia')
+const cheerio = require('cheerio')
+const URL = require('url')
 
-const intl = (searchTerm, language) => (
+module.exports = (searchTerm, language) => (
+  new Promise((resolve, reject) => {
+    intlpedia(searchTerm, language).then(page => {
+      const images = page.images
+      if (images) {
+        Promise.all(images.map(name => new Promise(resolve => {
+          const image = { name }
+          const base = `https://${language}.wikipedia.org`
+          fetchUrl(`${base}/wiki/${name}`, (err, res, buf) => {
+            if (!err && res.status === 200) {
+              const $ = cheerio.load(buf)
+              image.url = URL.resolve(base, $('div.fullImageLink a').attr('href'))
+            }
+            resolve(image)
+          })
+        }))).then(images => {
+          page.images = images
+          resolve(page)
+        })
+      } else resolve(page)
+    }).catch(err => reject(err))
+  })
+)
+
+const intlpedia = (searchTerm, language) => (
   new Promise((resolve, reject) => {
     wikipedia.from_api(encodeURI(searchTerm), language, markup => {
       if (markup) {
         const page = wikipedia.parse(markup)
-        if (page.type === 'redirect') return intl(page.redirect, language).then(page => resolve(page)).catch(err => reject(err))
+        if (page.type === 'redirect') return intlpedia(page.redirect, language).then(page => resolve(page)).catch(err => reject(err))
         page.name = searchTerm
         page.language = language
         return resolve(page)
@@ -44,5 +70,3 @@ const getPage = (searchTerms, language, index) => (
     })
   })
 )
-
-module.exports = intl
