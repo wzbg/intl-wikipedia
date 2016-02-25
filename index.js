@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-25 17:43:30
+* @Last Modified time: 2016-02-25 19:36:45
 */
 'use strict'
 
@@ -14,9 +14,8 @@ const URL = require('url')
 module.exports = (searchTerm, language) => (
   new Promise((resolve, reject) => {
     intlpedia(searchTerm, language).then(page => {
-      const images = page.images
-      if (images) {
-        Promise.all(images.map(name => new Promise(resolve => {
+      if (page && page.images) {
+        Promise.all(page.images.map(name => new Promise(resolve => {
           const image = { name }
           const base = `https://${language}.wikipedia.org`
           fetchUrl(`${base}/wiki/${name}`, (err, res, buf) => {
