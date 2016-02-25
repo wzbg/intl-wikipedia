@@ -2,22 +2,31 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-25 15:10:57
+* @Last Modified time: 2016-02-25 15:37:06
 */
 'use strict'
 
 const fetchUrl = require('fetch').fetchUrl
 const wikipedia = require('wtf_wikipedia')
 
-module.exports = (searchTerm, language) => (
+const intl = (searchTerm, language) => (
   new Promise((resolve, reject) => {
-    const url = `https://${language}.wikipedia.org/w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURI(searchTerm)}`
-    fetchUrl(url, (err, res, buf) => {
-      if (err) return reject(err)
-      if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
-      const results = JSON.parse(buf).query.search
-      if (!results.length) return resolve()
-      getPage(results.map(result => result.title), language).then(page => resolve(page)).catch(err => reject(err))
+    wikipedia.from_api(encodeURI(searchTerm), language, markup => {
+      if (markup) {
+        const page = wikipedia.parse(markup)
+        if (page.type === 'redirect') return intl(page.redirect, language).then(page => resolve(page)).catch(err => reject(err))
+        page.name = searchTerm
+        page.language = language
+        return resolve(page)
+      }
+      const url = `https://${language}.wikipedia.org/w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURI(searchTerm)}`
+      fetchUrl(url, (err, res, buf) => {
+        if (err) return reject(err)
+        if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
+        const results = JSON.parse(buf).query.search
+        if (!results.length) return resolve()
+        getPage(results.map(result => result.title), language).then(page => resolve(page)).catch(err => reject(err))
+      })
     })
   })
 )
@@ -35,3 +44,5 @@ const getPage = (searchTerms, language, index) => (
     })
   })
 )
+
+module.exports = intl
