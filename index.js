@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-26 15:46:44
+* @Last Modified time: 2016-02-26 17:31:33
 */
 'use strict'
 
@@ -21,7 +21,8 @@ module.exports = (searchTerm, language) => (
         fetchUrl(`${base}/wiki/${name}`, (err, res, buf) => {
           if (!err && res.status === 200) {
             const $ = cheerio.load(buf)
-            image.url = URL.resolve(base, $('div.fullImageLink a').attr('href'))
+            const url = $('div.fullImageLink a').attr('href')
+            if (url) image.url = URL.resolve(base, url)
           }
           resolve(image)
         })
