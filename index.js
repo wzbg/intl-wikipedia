@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-26 12:03:54
+* @Last Modified time: 2016-02-26 15:46:44
 */
 'use strict'
 
@@ -37,11 +37,15 @@ const intlpedia = (searchTerm, language) => (
   new Promise((resolve, reject) => {
     wikipedia.from_api(encodeURI(searchTerm), language, markup => {
       if (markup) {
+        // console.log('markup:', markup)
         const page = wikipedia.parse(markup)
-        if (page.type === 'redirect') return intlpedia(page.redirect, language).then(page => resolve(page)).catch(err => reject(err))
-        page.name = searchTerm
-        page.language = language
-        return resolve(page)
+        // console.log('page:', page)
+        if (page.redirect) return intlpedia(page.redirect, language).then(page => resolve(page)).catch(err => reject(err))
+        if (markup.indexOf('redirect') === -1) {
+          page.name = searchTerm
+          page.language = language
+          return resolve(page)
+        }
       }
       const url = `https://${language}.wikipedia.org/w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURI(searchTerm)}`
       fetchUrl(url, (err, res, buf) => {
