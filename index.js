@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-25 19:36:45
+* @Last Modified time: 2016-02-26 11:53:19
 */
 'use strict'
 
@@ -14,22 +14,22 @@ const URL = require('url')
 module.exports = (searchTerm, language) => (
   new Promise((resolve, reject) => {
     intlpedia(searchTerm, language).then(page => {
-      if (page && page.images) {
-        Promise.all(page.images.map(name => new Promise(resolve => {
-          const image = { name }
-          const base = `https://${language}.wikipedia.org`
-          fetchUrl(`${base}/wiki/${name}`, (err, res, buf) => {
-            if (!err && res.status === 200) {
-              const $ = cheerio.load(buf)
-              image.url = URL.resolve(base, $('div.fullImageLink a').attr('href'))
-            }
-            resolve(image)
-          })
-        }))).then(images => {
-          page.images = images
-          resolve(page)
+      if (!page) return reject(new Error(`empty page: ${searchTerm}`))
+      if (!page.images) return resolve(page)
+      Promise.all(page.images.map(name => new Promise(resolve => {
+        const image = { name }
+        const base = `https://${language}.wikipedia.org`
+        fetchUrl(`${base}/wiki/${name}`, (err, res, buf) => {
+          if (!err && res.status === 200) {
+            const $ = cheerio.load(buf)
+            image.url = URL.resolve(base, $('div.fullImageLink a').attr('href'))
+          }
+          resolve(image)
         })
-      } else resolve(page)
+      }))).then(images => {
+        page.images = images
+        resolve(page)
+      })
     }).catch(err => reject(err))
   })
 )
