@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-26 11:53:19
+* @Last Modified time: 2016-02-26 12:03:54
 */
 'use strict'
 
@@ -14,7 +14,6 @@ const URL = require('url')
 module.exports = (searchTerm, language) => (
   new Promise((resolve, reject) => {
     intlpedia(searchTerm, language).then(page => {
-      if (!page) return reject(new Error(`empty page: ${searchTerm}`))
       if (!page.images) return resolve(page)
       Promise.all(page.images.map(name => new Promise(resolve => {
         const image = { name }
@@ -49,7 +48,7 @@ const intlpedia = (searchTerm, language) => (
         if (err) return reject(err)
         if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
         const results = JSON.parse(buf).query.search
-        if (!results.length) return resolve()
+        if (!results.length) return reject(new Error(`not found: ${searchTerm}`))
         getPage(results.map(result => result.title), language).then(page => resolve(page)).catch(err => reject(err))
       })
     })
