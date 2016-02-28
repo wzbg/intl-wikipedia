@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-02-26 17:31:33
+* @Last Modified time: 2016-02-28 14:19:03
 */
 'use strict'
 
@@ -52,7 +52,9 @@ const intlpedia = (searchTerm, language) => (
       fetchUrl(url, (err, res, buf) => {
         if (err) return reject(err)
         if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
-        const results = JSON.parse(buf).query.search
+        const query = JSON.parse(buf).query
+        if (!query) return reject(new Error(`no result: ${searchTerm}`))
+        const results = query.search
         if (!results.length) return reject(new Error(`not found: ${searchTerm}`))
         getPage(results.map(result => result.title), language).then(page => resolve(page)).catch(err => reject(err))
       })
