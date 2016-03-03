@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-03 01:37:11
+* @Last Modified time: 2016-03-03 12:00:04
 */
 'use strict'
 
@@ -20,7 +20,7 @@ module.exports = class {
   search (searchTerm) {
     return new Promise((resolve, reject) => (
       this.getPage(searchTerm).then(page => resolve(page)).catch(err => {
-        fetchUrl(`${this.base}w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURI(searchTerm)}`, (err, res, buf) => {
+        fetchUrl(`${this.base}w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURIComponent(searchTerm)}`, (err, res, buf) => {
           if (err) return reject(err)
           if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
           const query = JSON.parse(buf).query
@@ -37,13 +37,13 @@ module.exports = class {
     index = index || 0
     if (!(searchTerms instanceof Array)) searchTerms = [searchTerms]
     if (searchTerms.length === index) return Promise.reject(new Error('no result'))
-    const res = request('GET', `${this.base}wiki/${encodeURI(searchTerms[index])}`)
+    const res = request('GET', `${this.base}wiki/${encodeURIComponent(searchTerms[index])}`)
     if (res.statusCode !== 200) return this.getPage(searchTerms, ++index)
     const $ = cheerio.load(res.body)
     $('script,sup.reference,table.metadata,span.mw-editsection').remove() // 删除参考资料 & 编辑
     const page = {
       language: this.language, // 语言
-      finalUrl: decodeURI(res.url), // 最终网址
+      finalUrl: decodeURIComponent(res.url), // 最终网址
       name: $('h1#firstHeading').text(), // 名称
       contents: [] // 内容
     }

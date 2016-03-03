@@ -1,6 +1,6 @@
 {
   "name": "intl-wikipedia",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Search from wikipedia for any language",
   "main": "index.js",
   "scripts": {
