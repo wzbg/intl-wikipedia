@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-03 12:00:04
+* @Last Modified time: 2016-03-03 17:25:19
 */
 'use strict'
 
@@ -36,7 +36,7 @@ module.exports = class {
   getPage (searchTerms, index) {
     index = index || 0
     if (!(searchTerms instanceof Array)) searchTerms = [searchTerms]
-    if (searchTerms.length === index) return Promise.reject(new Error('no result'))
+    if (!searchTerms[index]) return Promise.reject(new Error('no result'))
     const res = request('GET', `${this.base}wiki/${encodeURIComponent(searchTerms[index])}`)
     if (res.statusCode !== 200) return this.getPage(searchTerms, ++index)
     const $ = cheerio.load(res.body)
