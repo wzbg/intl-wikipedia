@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-03 17:25:19
+* @Last Modified time: 2016-03-07 23:55:29
 */
 'use strict'
 
@@ -141,6 +141,33 @@ module.exports = class {
           if (url) images.fullImage = URL.resolve(this.base, url)
         }
         resolve(images)
+      })
+    ))
+  }
+
+  static getData (dataId) {
+    return new Promise(resolve => (
+      fetchUrl('https://www.wikidata.org/wiki/' + dataId, (err, res, buf) => {
+        if (err) return reject(err)
+        if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
+        const data = {}
+        const $ = cheerio.load(buf)
+        const group = 'data-wb-sitelinks-group'
+        $(`div[${group}]`).each((index, element) => {
+          const node = $(element)
+          const key = node.attr(group)
+          const items = []
+          node.find('li a').each((index, element) => {
+            const node = $(element)
+            items.push({
+              name: node.text(),
+              language: node.attr('hreflang'),
+              url: decodeURIComponent(node.attr('href'))
+            })
+          })
+          if (items.length) data[key] = items
+        })
+        resolve(data)
       })
     ))
   }
