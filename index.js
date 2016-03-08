@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-07 23:55:29
+* @Last Modified time: 2016-03-08 16:38:14
 */
 'use strict'
 
@@ -146,7 +146,7 @@ module.exports = class {
   }
 
   static getData (dataId) {
-    return new Promise(resolve => (
+    return new Promise((resolve, reject) => (
       fetchUrl('https://www.wikidata.org/wiki/' + dataId, (err, res, buf) => {
         if (err) return reject(err)
         if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
