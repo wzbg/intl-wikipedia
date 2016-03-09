@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 14:39:14
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-09 15:07:32
+* @Last Modified time: 2016-03-09 17:40:18
 */
 'use strict'
 
@@ -22,7 +22,8 @@ const Intlpedia = require('./index')
 // const searchTerm = 'Leah Kaufmann'
 // const searchTerm = 'List of positions filled by presidential appointment with Senate confirmation'
 // const searchTerm = '联邦调查局'
-const searchTerm = '菲律宾'
+// const searchTerm = '菲律宾'
+const searchTerm = 'Instagram'
 
 // const intlpedia = new Intlpedia('en')
 const intlpedia = new Intlpedia('zh')

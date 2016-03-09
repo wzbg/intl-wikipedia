@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-09 15:09:26
+* @Last Modified time: 2016-03-09 17:40:12
 */
 'use strict'
 
@@ -78,6 +78,8 @@ module.exports = class {
     let title
     $('div#mw-content-text').children('h2,h3,h4,p,ul,ol,table').each((index, element) => {
       const node = $(element)
+      const cls = node.attr('class')
+      if (cls && cls.indexOf('infobox') !== -1) return
       const text = node.text().trim()
       const name = element.name
       if (name === 'h2') title = text
