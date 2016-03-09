@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-09 14:28:02
+* @Last Modified time: 2016-03-09 15:09:26
 */
 'use strict'
 
@@ -40,7 +40,7 @@ module.exports = class {
     const res = request('GET', `${this.base}wiki/${encodeURIComponent(searchTerms[index])}`)
     if (res.statusCode !== 200) return this.getPage(searchTerms, ++index)
     const $ = cheerio.load(res.body)
-    $('script,sup.reference,table.metadata,span.mw-editsection').remove() // 删除参考资料 & 编辑
+    $('script,sup.reference,table.metadata,span.mw-editsection,div.mediaContainer').remove() // 删除无用信息
     const page = {
       language: this.language, // 语言
       finalUrl: decodeURIComponent(res.url), // 最终网址

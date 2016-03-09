@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 14:39:14
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-07 23:57:50
+* @Last Modified time: 2016-03-09 15:07:32
 */
 'use strict'
 
@@ -21,7 +21,8 @@ const Intlpedia = require('./index')
 // const searchTerm = 'analyst'
 // const searchTerm = 'Leah Kaufmann'
 // const searchTerm = 'List of positions filled by presidential appointment with Senate confirmation'
-const searchTerm = '联邦调查局'
+// const searchTerm = '联邦调查局'
+const searchTerm = '菲律宾'
 
 // const intlpedia = new Intlpedia('en')
 const intlpedia = new Intlpedia('zh')
@@ -38,4 +39,4 @@ intlpedia.search(searchTerm).then(page => {
   // intlpedia.getFullImage(page.images).then(images => console.log(images))
 }).catch(err => console.error(err))
 
-Intlpedia.getData('Q8333').then(data => console.log(data.wikipedia)).catch(err => console.error(err))
+// Intlpedia.getData('Q8333').then(data => console.log(data.wikipedia)).catch(err => console.error(err))
