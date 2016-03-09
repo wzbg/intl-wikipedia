@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-08 16:38:14
+* @Last Modified time: 2016-03-09 14:28:02
 */
 'use strict'
 
@@ -55,7 +55,7 @@ module.exports = class {
         const imgs = []
         $(element).find('img').each((index, element) => imgs.push(URL.resolve(this.base, $(element).attr('src'))))
         if (imgs.length) td.imgs = imgs
-        const text = $(element).text().replace(/\s+/g, ' ').trim()
+        const text = $(element).text().trim()
         if (text) td.text = text
         if (imgs.length || text) tr.push(td)
       })
@@ -97,7 +97,7 @@ module.exports = class {
                 $(element).children().each((index, element) => {
                   tr.push({
                     name: element.name,
-                    text: $(element).text().replace(/\s+/g, '')
+                    text: $(element).text().trim()
                   })
                 })
               })
