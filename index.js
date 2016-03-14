@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-09 23:15:10
+* @Last Modified time: 2016-03-14 15:27:41
 */
 'use strict'
 
@@ -40,7 +40,7 @@ module.exports = class {
     const res = request('GET', `${this.base}wiki/${encodeURIComponent(searchTerms[index])}`)
     if (res.statusCode !== 200) return this.getPage(searchTerms, ++index)
     const $ = cheerio.load(res.body)
-    $('script,sup.reference,table.metadata,span.mw-editsection,div.mediaContainer').remove() // 删除无用信息
+    $('script,sup.reference,div.mediaContainer,table.metadata,span.mw-editsection,a.edit-page').remove() // 删除无用信息
     const page = {
       language: this.language, // 语言
       finalUrl: decodeURIComponent(res.url), // 最终网址
@@ -62,6 +62,7 @@ module.exports = class {
       if (tr.length) infobox.push(tr)
     })
     page.infobox = infobox
+    $('table.infobox').remove()
     const images = [] // 相册
     $('a.image').each((index, element) => {
       const node = $(element)
@@ -76,10 +77,8 @@ module.exports = class {
     const summaries = [] // 概要
     const map = new Map() // 内容
     let title
-    $('div#mw-content-text').children('h2,h3,h4,p,ul,ol,table').each((index, element) => {
+    $('div#mw-content-text').children('h2,h3,h4,div,p,ul,ol,table').each((index, element) => {
       const node = $(element)
-      const cls = node.attr('class')
-      if (cls && cls.indexOf('infobox') !== -1) return
       const text = node.text().trim()
       const name = element.name
       if (name === 'h2') title = text
