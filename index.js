@@ -2,12 +2,12 @@
 * @Author: zyc
 * @Date:   2016-02-18 19:42:54
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-14 15:27:41
+* @Last Modified time: 2016-05-04 01:43:13
 */
 'use strict'
 
-const fetchUrl = require('fetch').fetchUrl
-const request = require('sync-request')
+const requestSync = require('sync-request')
+const request = require('request')
 const cheerio = require('cheerio')
 const URL = require('url')
 
@@ -20,10 +20,10 @@ module.exports = class {
   search (searchTerm) {
     return new Promise((resolve, reject) => (
       this.getPage(searchTerm).then(page => resolve(page)).catch(err => {
-        fetchUrl(`${this.base}w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURIComponent(searchTerm)}`, (err, res, buf) => {
+        request(`${this.base}w/api.php?action=query&list=search&utf8&format=json&srsearch=${encodeURIComponent(searchTerm)}`, (err, res, body) => {
           if (err) return reject(err)
-          if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
-          const query = JSON.parse(buf).query
+          if (res.statusCode !== 200) return reject(new Error(`error status: ${res.statusCode}`))
+          const query = JSON.parse(body).query
           if (!query) return reject(new Error(`no result: ${searchTerm}`))
           const results = query.search
           if (!results.length) return reject(new Error(`not found: ${searchTerm}`))
@@ -37,7 +37,7 @@ module.exports = class {
     index = index || 0
     if (!(searchTerms instanceof Array)) searchTerms = [searchTerms]
     if (!searchTerms[index]) return Promise.reject(new Error('no result'))
-    const res = request('GET', `${this.base}wiki/${encodeURIComponent(searchTerms[index])}`)
+    const res = requestSync('GET', `${this.base}wiki/${encodeURIComponent(searchTerms[index])}`)
     if (res.statusCode !== 200) return this.getPage(searchTerms, ++index)
     const $ = cheerio.load(res.body)
     $('script,sup.reference,div.mediaContainer,table.metadata,span.mw-editsection,a.edit-page').remove() // 删除无用信息
@@ -135,9 +135,9 @@ module.exports = class {
   getFullImage (images) {
     if (images instanceof Array) return Promise.all(images.map(image => this.getFullImage(image)))
     return new Promise(resolve => (
-      fetchUrl(URL.resolve(this.base, images.name), (err, res, buf) => {
-        if (!err && res.status === 200) {
-          const $ = cheerio.load(buf)
+      request(URL.resolve(this.base, images.name), (err, res, body) => {
+        if (!err && res.statusCode === 200) {
+          const $ = cheerio.load(body)
           const url = $('div.fullImageLink a').attr('href')
           if (url) images.fullImage = URL.resolve(this.base, url)
         }
@@ -148,11 +148,11 @@ module.exports = class {
 
   static getData (dataId) {
     return new Promise((resolve, reject) => (
-      fetchUrl('https://www.wikidata.org/wiki/' + dataId, (err, res, buf) => {
+      request('https://www.wikidata.org/wiki/' + dataId, (err, res, body) => {
         if (err) return reject(err)
-        if (res.status !== 200) return reject(new Error(`error status: ${res.status}`))
+        if (res.statusCode !== 200) return reject(new Error(`error status: ${res.statusCode}`))
         const data = {}
-        const $ = cheerio.load(buf)
+        const $ = cheerio.load(body)
         const group = 'data-wb-sitelinks-group'
         $(`div[${group}]`).each((index, element) => {
           const node = $(element)

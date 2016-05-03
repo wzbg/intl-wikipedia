@@ -27,7 +27,7 @@ Run tests:
     $ npm test
 ```
 
-Tested with node.js v4.0+
+Tested with node.js v6.0+
 
 ## License
 The MIT License (MIT)

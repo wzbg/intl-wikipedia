@@ -2,7 +2,7 @@
 * @Author: zyc
 * @Date:   2016-02-18 14:39:14
 * @Last Modified by:   zyc
-* @Last Modified time: 2016-03-14 15:31:10
+* @Last Modified time: 2016-03-26 16:41:07
 */
 'use strict'
 
@@ -25,14 +25,15 @@ const Intlpedia = require('./index')
 // const searchTerm = 'maroon'
 // const searchTerm = 'The Crown'
 // const searchTerm = 'IRS Free File'
+const searchTerm = 'Flight risk'
 
 // const searchTerm = '联邦调查局'
 // const searchTerm = '伯尼·桑德'
 // const searchTerm = '菲律宾'
-const searchTerm = '马恩维'
+// const searchTerm = '马恩维'
 
-// const intlpedia = new Intlpedia('en')
-const intlpedia = new Intlpedia('zh')
+const intlpedia = new Intlpedia('en')
+// const intlpedia = new Intlpedia('zh')
 intlpedia.search(searchTerm).then(page => {
   console.log(page)
   // console.log(JSON.stringify(page))
@@ -46,4 +47,4 @@ intlpedia.search(searchTerm).then(page => {
   // intlpedia.getFullImage(page.images).then(images => console.log(images))
 }).catch(err => console.error(err))
 
-// Intlpedia.getData('Q8333').then(data => console.log(data.wikipedia)).catch(err => console.error(err))
+// Intlpedia.getData('Q16869161').then(data => console.log(data.wikipedia)).catch(err => console.error(err))

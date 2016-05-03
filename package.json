@@ -1,6 +1,6 @@
 {
   "name": "intl-wikipedia",
-  "version": "4.1.6",
+  "version": "5.0.0",
   "description": "Search from wikipedia for any language",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "cheerio": "^0.20.0",
-    "fetch": "^1.0.1",
-    "sync-request": "^3.0.0"
+    "request": "^2.72.0",
+    "sync-request": "^3.0.1"
   }
 }
